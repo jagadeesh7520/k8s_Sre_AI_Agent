@@ -49,8 +49,8 @@ minikube version
 ```
 **Output:**
 ```
-minikube version: v1.33.1
-commit: 5883c09216182566a63dff4c326a6fc9ed2982ff
+minikube version: v1.##.###
+commit: ##############3456787
 ```
 
 ## Step #2: Install `kubectl` on Minikube
