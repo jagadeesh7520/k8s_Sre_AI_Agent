@@ -1,4 +1,4 @@
-# Installing Minikube and ArgoCD on Ubuntu 24.04 LTS
+# AI SRE for Kubernetes
 
 ## Step #1: Install Minikube on Ubuntu 24.04 LTS
 
@@ -72,32 +72,12 @@ sudo mv kubectl /usr/local/bin/
 ```bash
 kubectl version --client --output=yaml
 ```
-**Output:**
-```
-clientVersion:
-  buildDate: "2024-06-11T20:29:44Z"
-  compiler: gc
-  gitCommit: 39683505b630ff2121012f3c5b16215a1449d5ed
-  gitTreeState: clean
-  gitVersion: v1.30.2
-  goVersion: go1.22.4
-  major: "1"
-  minor: "30"
-  platform: linux/amd64
-kustomizeVersion: v5.0.4-0.20230601165947-6ce0bf390ce3
-```
 
 ## Step #3: Start Minikube on Ubuntu 24.04 LTS
 
 ### Start Minikube with Docker Driver
 ```bash
 minikube start --vm-driver docker
-```
-**Output:**
-```
-* minikube v1.33.1 on Ubuntu 24.04 (xen/amd64)
-* Using the docker driver based on user configuration
-... (truncated for brevity) ...
 ```
 
 ### Check Minikube Status
@@ -120,15 +100,13 @@ kubectl cluster-info
 kubectl get nodes
 ```
 
-### Create Deployment and Service
+### Create Deployment and Service optional)
 ```bash
-kubectl create deployment my-app --image=nginx
-kubectl expose deployment my-app --name=my-app-svc --type=NodePort --port=80
-kubectl get svc my-app-svc
-minikube service my-app-svc --url
+kubectl create deployment demo-app --image=nginx
+kubectl expose deployment demo-app --name=demo-app-svc --type=NodePort --port=80
+kubectl get svc demo-app-svc
+minikube service demo-app-svc --url
 ```
-
-# AI SRE for Kubernetes
 
 An intelligent automated troubleshooting system for Kubernetes using AI/LLM to diagnose and fix common pod issues.
 
@@ -148,12 +126,12 @@ An intelligent automated troubleshooting system for Kubernetes using AI/LLM to d
 - `pip`
 
 **API Key:**
-- OpenAI API key OR
-- Ollama (local & free)
+- OpenAI API key 
+- Ollama (local & free and opensource)
 
 ---
 
-## 2️⃣ Installation & Setup
+##  Installation & Setup
 
 ### Step 1: Install & Verify Ollama
 
@@ -175,7 +153,7 @@ ollama serve
 ollama pull gemma:2b
 ```
 
-### Step 2: Install Python
+###  Install Python
 
 ```bash
 sudo apt update
@@ -185,8 +163,8 @@ sudo apt install -y python3 python3-pip python3-venv
 ### Step 3: Create a Virtual Environment
 
 ```bash
-mkdir ai-sre-demo
-cd ai-sre-demo
+mkdir sre-ai-agent-demo
+cd sre-ai-agent-demo
 
 python3 -m venv venv
 source venv/bin/activate
@@ -200,9 +178,9 @@ pip install requests ollama
 
 ---
 
-## 3️⃣ AI SRE Python Script
+## AI Agent SRE Python Script
 
-Create a file named `ai_sre.py`:
+Create a file named `sre_ai_agent.py`:
 
 ```python
 import subprocess
@@ -210,7 +188,7 @@ import ollama
 import sys
 
 NAMESPACE = "default"
-DEPLOYMENT = "broken-app"
+DEPLOYMENT = "demo-app"
 CONTAINER = "app"
 
 def safe_run(cmd):
@@ -220,13 +198,13 @@ def safe_run(cmd):
         return e.output
 
 def get_status():
-    return safe_run(f"kubectl get pods -l app=broken-app -n {NAMESPACE}")
+    return safe_run(f"kubectl get pods -l app=demo-app -n {NAMESPACE}")
 
 def get_logs():
     return safe_run(f"kubectl logs deployment/{DEPLOYMENT} -n {NAMESPACE}")
 
 def get_events():
-    return safe_run(f"kubectl describe pod -l app=broken-app -n {NAMESPACE}")
+    return safe_run(f"kubectl describe pod -l app=demo-app -n {NAMESPACE}")
 
 def ask_ai(logs, events):
     prompt = f"""
@@ -284,11 +262,11 @@ def build_fix(fix_type, fix_value):
 
 def fallback(logs, events):
     if "ImagePullBackOff" in events:
-        return "kubectl set image deployment/broken-app app=nginx:latest"
+        return "kubectl set image deployment/demo-app app=nginx:latest"
     if "OOMKilled" in events:
-        return "kubectl set resources deployment/broken-app --limits=memory=256Mi"
+        return "kubectl set resources deployment/demo-app --limits=memory=256Mi"
     if "DB_URL" in logs:
-        return "kubectl set env deployment/broken-app DB_URL=postgres://db:5432/app"
+        return "kubectl set env deployment/demo-app DB_URL=postgres://db:5432/app"
     return None
 
 print("\n🔍 POD STATUS")
@@ -335,16 +313,16 @@ Create `broken-image.yaml`:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: broken-app
+  name: demo-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: broken-app
+      app: demo-app
   template:
     metadata:
       labels:
-        app: broken-app
+        app: demo-app
     spec:
       containers:
       - name: app
@@ -354,28 +332,28 @@ spec:
 **Apply and test:**
 
 ```bash
-kubectl apply -f broken-image.yaml
-python3 ai_sre.py
+kubectl apply -f demo-image.yaml
+python3 sre_ai_agent.py
 ```
 
 ### Scenario 2: OOMKilled (Out of Memory)
 
-Create `broken-memory.yaml`:
+Create `demo-oom.yaml`:
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: broken-app
+  name: demo-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: broken-app
+      app: demo-app
   template:
     metadata:
       labels:
-        app: broken-app
+        app: demo-app
     spec:
       containers:
       - name: app
@@ -390,8 +368,8 @@ spec:
 **Apply and test:**
 
 ```bash
-kubectl apply -f broken-memory.yaml
-python3 ai_sre.py
+kubectl apply -f demo-app.yaml
+python3 sre_ai_agent.py
 ```
 
 ---
@@ -422,7 +400,7 @@ python3 ai_sre.py
 1. Deploy a broken application to Kubernetes
 2. Run the AI SRE script:
    ```bash
-   python3 ai_sre.py
+   python3 sre_ai_agent.py
    ```
 3. Review the AI analysis and proposed fix
 4. Approve or reject the fix
