@@ -379,15 +379,6 @@ python3 sre_ai_agent.py
 <img width="914" height="230" alt="Screenshot 2025-12-17 111319" src="https://github.com/user-attachments/assets/bdfc63f2-04b9-48b1-b1db-0695a1068feb" />
 <img width="757" height="214" alt="Screenshot 2025-12-17 111342" src="https://github.com/user-attachments/assets/cf805d9d-52d8-40ac-b49f-66f4f5fd2d64" />
 <img width="968" height="248" alt="Screenshot 2025-12-17 111359" src="https://github.com/user-attachments/assets/9f278c10-779c-4179-acf2-c1d2d367de1b" />
-<img width="983" height="226" alt="Screenshot 2025-12-17 111652" src="https://github.com/user-attachments/assets/27140bc4-5c11-4836-8b3c-6f80379a3dad" />
-<img width="888" height="199" alt="Screenshot 2025-12-17 113447" src="https://github.com/user-attachments/assets/64167296-85a9-49a2-8651-0912fc6dedad" />
-
-
-
-
-
-
-
 
 
 
