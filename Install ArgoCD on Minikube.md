@@ -1,4 +1,4 @@
-# AI SRE for Kubernetes
+# AI  Agent SRE for Kubernetes
 
 ## Step #1: Install Minikube on Ubuntu 24.04 LTS
 
